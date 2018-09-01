@@ -1,6 +1,6 @@
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum Stmt {
     Block(Vec<Stmt>),
     Empty,
@@ -11,7 +11,7 @@ pub enum Stmt {
     While(Expr, Box<Stmt>),
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum Expr {
     Array(Vec<Expr>),
     Assign(String, Box<Expr>),
@@ -30,13 +30,13 @@ pub enum Expr {
     Var(String),
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Function {
     pub params: Vec<String>,
     pub body: Vec<Stmt>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum UnaryOperator {
     Add,
     BitwiseNot,
@@ -47,7 +47,7 @@ pub enum UnaryOperator {
     Void,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum BinaryOperator {
     Add,
     And,
