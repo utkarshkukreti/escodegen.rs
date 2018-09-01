@@ -2,5 +2,10 @@
 name = "escodegen"
 version = "0.1.0"
 authors = ["Utkarsh Kukreti <utkarshkukreti@gmail.com>"]
+description = "AST and code generator for a subset of ES5."
+license = "MIT"
+documentation = "https://docs.rs/escodegen"
+homepage = "https://github.com/utkarshkukreti/escodegen.rs"
+repository = "https://github.com/utkarshkukreti/escodegen.rs"
 
 [dependencies]
