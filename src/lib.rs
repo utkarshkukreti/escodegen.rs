@@ -6,6 +6,7 @@ pub enum Stmt {
     Empty,
     Expr(Expr),
     If(Expr, Box<Stmt>, Option<Box<Stmt>>),
+    Let(String, Option<Expr>),
     Return(Option<Expr>),
     Var(String, Option<Expr>),
     While(Expr, Box<Stmt>),
@@ -98,6 +99,10 @@ impl fmt::Display for Stmt {
                 }
                 Ok(())
             }
+            Let(name, expr) => match expr {
+                Some(expr) => write!(f, "let {}={};", name, expr),
+                None => write!(f, "let {};", name),
+            },
             Return(Some(expr)) => write!(f, "return {};", expr),
             Return(None) => write!(f, "return;"),
             Var(name, expr) => match expr {
