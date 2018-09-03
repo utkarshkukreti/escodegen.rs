@@ -86,7 +86,7 @@ impl fmt::Display for Stmt {
                 }
                 write!(f, "}}")
             }
-            Empty => Ok(()),
+            Empty => write!(f, "{{}}"),
             Expr(expr) => {
                 expr.fmt(f)?;
                 write!(f, ";")
