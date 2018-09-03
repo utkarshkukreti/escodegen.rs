@@ -80,10 +80,11 @@ impl fmt::Display for Stmt {
 
         match self {
             Block(stmts) => {
+                write!(f, "{{")?;
                 for stmt in stmts {
                     stmt.fmt(f)?;
                 }
-                Ok(())
+                write!(f, "}}")
             }
             Empty => Ok(()),
             Expr(expr) => {
