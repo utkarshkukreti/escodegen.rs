@@ -3,10 +3,8 @@ use std::fmt;
 #[derive(Clone, Debug)]
 pub enum Stmt {
     Block(Vec<Stmt>),
-    Empty,
     Expr(Expr),
     If(Expr, Box<Stmt>, Option<Box<Stmt>>),
-    Let(String, Option<Expr>),
     Return(Option<Expr>),
     Var(String, Option<Expr>),
     While(Expr, Box<Stmt>),
@@ -19,7 +17,7 @@ pub enum Expr {
     Binary(BinaryOperator, Box<Expr>, Box<Expr>),
     Bool(bool),
     Call(Box<Expr>, Vec<Expr>),
-    Function(Function),
+    Function(Vec<String>, Vec<Stmt>),
     Member(Box<Expr>, Box<Expr>),
     Null,
     Number(f64),
@@ -29,12 +27,6 @@ pub enum Expr {
     Unary(UnaryOperator, Box<Expr>),
     Undefined,
     Var(String),
-}
-
-#[derive(Clone, Debug)]
-pub struct Function {
-    pub params: Vec<String>,
-    pub body: Vec<Stmt>,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -87,7 +79,6 @@ impl fmt::Display for Stmt {
                 }
                 write!(f, "}}")
             }
-            Empty => write!(f, "{{}}"),
             Expr(expr) => {
                 expr.fmt(f)?;
                 write!(f, ";")
@@ -99,10 +90,6 @@ impl fmt::Display for Stmt {
                 }
                 Ok(())
             }
-            Let(name, expr) => match expr {
-                Some(expr) => write!(f, "let {}={};", name, expr),
-                None => write!(f, "let {};", name),
-            },
             Return(Some(expr)) => write!(f, "return {};", expr),
             Return(None) => write!(f, "return;"),
             Var(name, expr) => match expr {
@@ -142,16 +129,16 @@ impl fmt::Display for Expr {
                 }
                 write!(f, ")")
             }
-            Function(func) => {
+            Function(params, body) => {
                 write!(f, "function(")?;
-                for (i, param) in func.params.iter().enumerate() {
+                for (i, param) in params.iter().enumerate() {
                     if i > 0 {
                         write!(f, ",")?;
                     }
                     write!(f, "{}", param)?;
                 }
                 write!(f, "){{")?;
-                for stmt in &func.body {
+                for stmt in body {
                     write!(f, "{}", stmt)?;
                 }
                 write!(f, "}}")
