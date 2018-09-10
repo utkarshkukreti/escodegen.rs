@@ -1,96 +1,98 @@
 use {Expr, Stmt};
 
-pub trait Walker {
-    fn pre_stmt(&mut self, _stmt: &Stmt) {}
-    fn post_stmt(&mut self, _stmt: &Stmt) {}
-    fn pre_expr(&mut self, _expr: &Expr) {}
-    fn post_expr(&mut self, _expr: &Expr) {}
-}
-
-pub trait WalkerMut {
-    fn pre_stmt(&mut self, _stmt: &mut Stmt) {}
-    fn post_stmt(&mut self, _stmt: &mut Stmt) {}
-    fn pre_expr(&mut self, _expr: &mut Expr) {}
-    fn post_expr(&mut self, _expr: &mut Expr) {}
-}
-
 macro_rules! walk {
-    ($trait:path, $stmt:ident, $expr:ident, $stmt_ty:ty, $expr_ty:ty) => {
-        pub fn $stmt<W: $trait>(walker: &mut W, stmt: $stmt_ty) {
+    ($stmt:ident, $expr:ident, $stmt_ty:ty, $expr_ty:ty) => {
+        pub fn $stmt(
+            stmt: $stmt_ty,
+            pre_stmt: &mut impl FnMut($stmt_ty),
+            post_stmt: &mut impl FnMut($stmt_ty),
+            pre_expr: &mut impl FnMut($expr_ty),
+            post_expr: &mut impl FnMut($expr_ty),
+        ) {
+            macro_rules! r {
+                ($f: ident,$a: expr) => {
+                    $f($a, pre_stmt, post_stmt, pre_expr, post_expr);
+                };
+            }
             use Stmt::*;
-            walker.pre_stmt(stmt);
+            pre_stmt(stmt);
             match stmt {
                 Block(stmts) => for stmt in stmts {
-                    $stmt(walker, stmt);
+                    r!($stmt, stmt);
                 },
-                Expr(expr) => $expr(walker, expr),
+                Expr(expr) => r!($expr, expr),
                 If(expr, then, else_) => {
-                    $expr(walker, expr);
-                    $stmt(walker, then);
+                    r!($expr, expr);
+                    r!($stmt, then);
                     if let Some(else_) = else_ {
-                        $stmt(walker, else_);
+                        r!($stmt, else_);
                     }
                 }
-                Return(Some(expr)) => $expr(walker, expr),
+                Return(Some(expr)) => r!($expr, expr),
                 Return(None) => {}
-                Var(_, Some(expr)) => $expr(walker, expr),
+                Var(_, Some(expr)) => r!($expr, expr),
                 Var(_, None) => {}
                 While(expr, stmt) => {
-                    $expr(walker, expr);
-                    $stmt(walker, stmt);
+                    r!($expr, expr);
+                    r!($stmt, stmt);
                 }
             }
-            walker.post_stmt(stmt);
+            post_stmt(stmt);
         }
-        pub fn $expr<W: $trait>(walker: &mut W, expr: $expr_ty) {
+        pub fn $expr(
+            expr: $expr_ty,
+            pre_stmt: &mut impl FnMut($stmt_ty),
+            post_stmt: &mut impl FnMut($stmt_ty),
+            pre_expr: &mut impl FnMut($expr_ty),
+            post_expr: &mut impl FnMut($expr_ty),
+        ) {
+            macro_rules! r {
+                ($f: ident,$a: expr) => {
+                    $f($a, pre_stmt, post_stmt, pre_expr, post_expr);
+                };
+            }
             use Expr::*;
-            walker.pre_expr(expr);
+            pre_expr(expr);
             match expr {
                 Array(exprs) => for expr in exprs {
-                    $expr(walker, expr)
+                    r!($expr, expr)
                 },
-                Assign(_, expr) => $expr(walker, expr),
+                Assign(_, expr) => r!($expr, expr),
                 Binary(_, left, right) => {
-                    $expr(walker, left);
-                    $expr(walker, right);
+                    r!($expr, left);
+                    r!($expr, right);
                 }
                 Bool(_) => {}
                 Call(expr, args) => {
-                    $expr(walker, expr);
+                    r!($expr, expr);
                     for arg in args {
-                        $expr(walker, arg)
+                        r!($expr, arg)
                     }
                 }
                 Function(_, stmts) => {
                     for stmt in stmts {
-                        $stmt(walker, stmt)
+                        r!($stmt, stmt)
                     }
                 }
                 Member(expr, field) => {
-                    $expr(walker, expr);
-                    $expr(walker, field);
+                    r!($expr, expr);
+                    r!($expr, field);
                 }
                 Null => {}
                 Number(_) => {}
                 Object(kvs) => for (_, v) in kvs {
-                    $expr(walker, v);
+                    r!($expr, v);
                 },
                 String(_) => {}
                 This => {}
-                Unary(_, expr) => $expr(walker, expr),
+                Unary(_, expr) => r!($expr, expr),
                 Undefined => {}
                 Var(_) => {}
             }
-            walker.post_expr(expr);
+            post_expr(expr);
         }
     };
 }
 
-walk!(Walker, walk_stmt, walk_expr, &Stmt, &Expr);
-walk!(
-    WalkerMut,
-    walk_stmt_mut,
-    walk_expr_mut,
-    &mut Stmt,
-    &mut Expr
-);
+walk!(walk_stmt, walk_expr, &Stmt, &Expr);
+walk!(walk_stmt_mut, walk_expr_mut, &mut Stmt, &mut Expr);
