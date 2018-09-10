@@ -1,7 +1,7 @@
-use {Expr, Stmt};
+pub use {Expr, Stmt};
 
-pub use BinaryOperator::*;
-pub use UnaryOperator::*;
+pub use BinaryOperator::{self, *};
+pub use UnaryOperator::{self, *};
 
 #[derive(Copy, Clone)]
 pub struct G;
