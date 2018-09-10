@@ -2,7 +2,7 @@ use std::fmt;
 
 pub mod g;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Stmt {
     Block(Vec<Stmt>),
     Expr(Expr),
@@ -12,7 +12,7 @@ pub enum Stmt {
     While(Expr, Box<Stmt>),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Expr {
     Array(Vec<Expr>),
     Assign(String, Box<Expr>),
@@ -31,7 +31,7 @@ pub enum Expr {
     Var(String),
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum UnaryOperator {
     Add,
     BitwiseNot,
@@ -42,7 +42,7 @@ pub enum UnaryOperator {
     Void,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum BinaryOperator {
     Add,
     And,
