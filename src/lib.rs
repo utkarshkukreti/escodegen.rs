@@ -1,6 +1,7 @@
 use std::fmt;
 
 pub mod g;
+pub mod walk;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Stmt {
