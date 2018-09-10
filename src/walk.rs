@@ -1,13 +1,13 @@
 use {Expr, Stmt};
 
 pub trait Walker {
-    fn pre_stmt(&mut self, _stmt: &mut Stmt) {}
-    fn post_stmt(&mut self, _stmt: &mut Stmt) {}
-    fn pre_expr(&mut self, _expr: &mut Expr) {}
-    fn post_expr(&mut self, _expr: &mut Expr) {}
+    fn pre_stmt(&mut self, _stmt: &Stmt) {}
+    fn post_stmt(&mut self, _stmt: &Stmt) {}
+    fn pre_expr(&mut self, _expr: &Expr) {}
+    fn post_expr(&mut self, _expr: &Expr) {}
 }
 
-pub fn walk_stmt<W: Walker>(walker: &mut W, stmt: &mut Stmt) {
+pub fn walk_stmt<W: Walker>(walker: &mut W, stmt: &Stmt) {
     use Stmt::*;
     walker.pre_stmt(stmt);
     match stmt {
@@ -34,7 +34,7 @@ pub fn walk_stmt<W: Walker>(walker: &mut W, stmt: &mut Stmt) {
     walker.post_stmt(stmt);
 }
 
-pub fn walk_expr<W: Walker>(walker: &mut W, expr: &mut Expr) {
+pub fn walk_expr<W: Walker>(walker: &mut W, expr: &Expr) {
     use Expr::*;
     walker.pre_expr(expr);
     match expr {
