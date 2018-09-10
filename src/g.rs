@@ -3,6 +3,7 @@ use {Expr, Stmt};
 pub use BinaryOperator::*;
 pub use UnaryOperator::*;
 
+#[derive(Copy, Clone)]
 pub struct G;
 
 #[allow(non_upper_case_globals)]
