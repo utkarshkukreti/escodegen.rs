@@ -87,9 +87,9 @@ impl fmt::Display for Stmt {
                 write!(f, ";")
             }
             If(expr, then, else_) => {
-                write!(f, "if({}){{{}}}", expr, then)?;
+                write!(f, "if({}){}", expr, then)?;
                 if let Some(else_) = else_ {
-                    write!(f, "else{{{}}}", else_)?;
+                    write!(f, "else{}", else_)?;
                 }
                 Ok(())
             }
