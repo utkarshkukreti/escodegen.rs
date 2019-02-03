@@ -146,10 +146,7 @@ impl fmt::Display for Expr {
                 }
                 write!(f, "}}")
             }
-            Member(expr, field) => match field.as_ref() {
-                String(string) => write!(f, "{}.{}", expr, string),
-                _ => write!(f, "{}[{}]", expr, field),
-            },
+            Member(expr, field) => write!(f, "{}[{}]", expr, field),
             Null => write!(f, "null"),
             Number(f64) => write!(f, "{}", f64),
             Object(kvs) => {
