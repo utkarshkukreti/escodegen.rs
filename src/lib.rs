@@ -146,7 +146,10 @@ impl fmt::Display for Expr {
                 }
                 write!(f, "}}")
             }
-            Member(expr, field) => write!(f, "{}[{}]", expr, field),
+            Member(expr, field) => match field.as_ref() {
+                String(string) if is_identifier(string) => write!(f, "{}.{}", expr, string),
+                _ => write!(f, "{}[{}]", expr, field),
+            },
             Null => write!(f, "null"),
             Number(f64) => write!(f, "{}", f64),
             Object(kvs) => {
@@ -220,4 +223,12 @@ impl fmt::Display for BinaryOperator {
             }
         )
     }
+}
+
+fn is_identifier(str: &str) -> bool {
+    str.chars().enumerate().all(|(index, ch)| match ch {
+        'a'...'z' | 'A'...'Z' | '$' | '_' => true,
+        '0'...'9' => index > 0,
+        _ => false,
+    })
 }
