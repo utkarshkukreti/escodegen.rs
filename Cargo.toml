@@ -1,6 +1,6 @@
 [package]
 name = "escodegen"
-version = "0.4.3"
+version = "0.4.4"
 authors = ["Utkarsh Kukreti <utkarshkukreti@gmail.com>"]
 description = "AST and code generator for a subset of ES5."
 license = "MIT"
